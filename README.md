@@ -294,7 +294,7 @@
               </div>
             </div>
             <div class="card-content">
-              <h3>Parque Nacional El Boquerón</h3>
+              <h3>Comalapa Caluco</h3>
               <p>Miradores al cráter del volcán y clima fresco en San Salvador.</p>
               <div class="features">
                 <span class="feature"><i class="fas fa-mountain"></i> Miradores</span>
@@ -768,5 +768,6 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 

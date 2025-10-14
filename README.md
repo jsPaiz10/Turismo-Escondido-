@@ -285,7 +285,7 @@
           <!-- El Boquerón -->
           <div class="destination-card" data-destination="el-boqueron">
             <div class="card-image">
-              <img src="ComalapaCaluco.png" alt="Parque Nacional El Boquerón">
+              <img src="ComalapaCaluco.png" alt="Comalapa Caluco">
               <div class="card-overlay">
                 <div class="card-badge">Nuevo</div>
                 <button class="favorite-btn" onclick="toggleFavorite(this)">
@@ -768,4 +768,5 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 

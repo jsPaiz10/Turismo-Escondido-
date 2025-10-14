@@ -1,42 +1,771 @@
-# Turismo Escondido - MVP
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Turismo Escondido - Guía Turística de El Salvador</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="config.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_z3LOmUWzpUjFVigymif2kXw1jNtIn_g"></script>
+</head>
+<body>
+  <audio controls> <source src="RIO.mp3" type="audio/mp3">
+    <source src="audio/audio.mp3" type="audio/mp3"> 
+  </audio>
+  <!-- Pantalla de Login -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-container">
+      <div class="login-header">
+        <div class="logo-large">
+          <i class="fas fa-sun"></i>
+          <h1>Turismo Escondido</h1>
+        </div>
+        <p class="login-subtitle">Explora El Salvador auténtico</p>
+      </div>
+      
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <div class="input-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" placeholder="Contraseña" required>
+            <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-options">
+          <label class="checkbox-container">
+            <input type="checkbox" id="rememberMe">
+            <span class="checkmark"></span>
+            Recordarme
+          </label>
+          <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+        
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </button>
+        
+        <div class="divider">
+          <span>o</span>
+        </div>
+        
+        <button type="button" class="btn-google" onclick="loginWithGoogle()">
+          <i class="fab fa-google"></i>
+          Continuar con Google
+        </button>
+        
+        <div class="register-link">
+          ¿No tienes cuenta? <a href="#" onclick="showRegister()">Regístrate aquí</a>
+        </div>
+      </form>
+    </div>
+  </div>
 
-Guía turística de El Salvador con destinos reales y sonidos interactivos.
+  <!-- Pantalla de Registro -->
+  <div id="registerScreen" class="register-screen hidden">
+    <div class="register-container">
+      <div class="register-header">
+        <button class="back-btn" onclick="showLogin()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Crear Cuenta</h2>
+      </div>
+      
+      <form id="registerForm" class="register-form">
+        <div class="form-group">
+          <div class="input-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="registerName" placeholder="Nombre completo" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="input-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="registerEmail" placeholder="Correo electrónico" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="registerPassword" placeholder="Contraseña" required>
+            <button type="button" class="toggle-password" onclick="togglePassword('registerPassword')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="registerConfirmPassword" placeholder="Confirmar contraseña" required>
+            <button type="button" class="toggle-password" onclick="togglePassword('registerConfirmPassword')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-options">
+          <label class="checkbox-container">
+            <input type="checkbox" id="agreeTerms" required>
+            <span class="checkmark"></span>
+            Acepto los <a href="#">términos y condiciones</a>
+          </label>
+        </div>
+        
+        <button type="submit" class="btn-register">
+          <i class="fas fa-user-plus"></i>
+          Crear Cuenta
+        </button>
+      </form>
+    </div>
+  </div>
 
-## 🚀 Características
+  <!-- Aplicación Principal -->
+  <div id="mainApp" class="main-app hidden">
+    <!-- Header Retráctil -->
+    <header id="mainHeader" class="main-header">
+      <div class="header-content">
+        <div class="header-left">
+          <div class="logo">
+            <i class="fas fa-sun"></i>
+            <span>Turismo Escondido</span>
+          </div>
+        </div>
+        
+        <div class="header-right">
+          <button class="header-btn" onclick="toggleSearch()">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="header-btn" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">3</span>
+          </button>
+          <button class="header-btn profile-btn" onclick="toggleProfileMenu()">
+            <img src="https://via.placeholder.com/32x32/2563eb/ffffff?text=U" alt="Perfil" class="profile-avatar">
+          </button>
+        </div>
+      </div>
+      
+      <!-- Barra de búsqueda -->
+      <div id="searchBar" class="search-bar hidden">
+        <div class="search-input">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Buscar destinos, actividades..." oninput="handleSearch()">
+          <button class="search-close" onclick="toggleSearch()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+  </header>
 
-- **3 Destinos Reales**: Playa El Tunco, El Boquerón, Lago de Coatepeque
-- **Mapa Interactivo**: Con Google Maps y marcadores personalizados
-- **Sonidos Ambientales**: Audio de fondo en modales de destinos
-- **Diseño Responsive**: Funciona en móviles y desktop
-- **Paleta Cultural**: Colores inspirados en El Salvador
+    <!-- Menú de perfil -->
+    <div id="profileMenu" class="profile-menu hidden">
+      <div class="profile-header">
+        <img src="https://via.placeholder.com/60x60/2563eb/ffffff?text=U" alt="Perfil" class="profile-avatar-large">
+        <div class="profile-info">
+          <h3 id="userName">Usuario</h3>
+          <p id="userEmail">usuario@email.com</p>
+        </div>
+      </div>
+      <div class="profile-options">
+        <a href="#" class="profile-option">
+          <i class="fas fa-user"></i>
+          Mi Perfil
+        </a>
+        <a href="#" class="profile-option">
+          <i class="fas fa-heart"></i>
+          Favoritos
+        </a>
+        <a href="#" class="profile-option">
+          <i class="fas fa-calendar"></i>
+          Mis Reservas
+        </a>
+        <a href="#" class="profile-option">
+          <i class="fas fa-cog"></i>
+          Configuración
+        </a>
+        <a href="#" class="profile-option" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar Sesión
+        </a>
+      </div>
+    </div>
 
-## 📁 Archivos
+    <!-- Contenido Principal -->
+    <main id="mainContent" class="main-content">
+      <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+          <h2 class="hero-title">Descubre la magia de Caluco</h2>
+          <p class="hero-subtitle">Explora lugares turisticos, pueblos y naturaleza con cultura y emoción</p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="scrollToSection('destinations')">
+              <i class="fas fa-map-marker-alt"></i> Explorar
+            </button>
+          </div>
+        </div>
+        
+        <div class="hero-stats">
+          <div class="stat">
+            <i class="fas fa-water"></i>
+            <span class="stat-number">5+</span>
+            <span class="stat-label">Turicentros</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-users"></i>
+            <span class="stat-number">1000+</span>
+            <span class="stat-label">Visitantes</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-star"></i>
+            <span class="stat-number">4.8</span>
+            <span class="stat-label">Calificación</span>
+          </div>
+        </div>
+    </section>
 
-- `index.html` - Página principal
-- `styles.css` - Estilos y diseño
-- `script.js` - Funcionalidad y sonidos
-- `config.js` - Configuración del mapa
-- `RIO.mp3` - Archivo de audio (no usado actualmente)
+      <!-- Destinos -->
+      <section id="destinations" class="destinations">
+        <div class="section-header">
+          <h2>Destinos Destacados</h2>
+          <p>Experiencias reales por todo El Salvador</p>
+        </div>
+        
+        <div class="destinations-grid">
+          <!-- Playa El Tunco -->
+          <div class="destination-card" data-destination="el-tunco">
+            <div class="card-image">
+              <img src="https://elsalvadorviajar.com/en/wp-content/uploads/2021/10/TURICENTRO-SHUTECATH-Parques-Acuaticos-de-El-Salvador-600x400.jpg" alt="Playa El Tunco">
+              <div class="card-overlay">
+                <div class="card-badge">Popular</div>
+                <button class="favorite-btn" onclick="toggleFavorite(this)">
+                  <i class="fas fa-heart"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Shutecath</h3>
+              <p>Surf, gastronomía y atardeceres icónicos en La Libertad.</p>
+              <div class="features">
+                <span class="feature"><i class="fas fa-water"></i> Surf</span>
+                <span class="feature"><i class="fas fa-mug-hot"></i> Cafés</span>
+                <span class="feature"><i class="fas fa-music"></i> Ambiente</span>
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-primary" onclick="showDestinationDetails('el-tunco')">
+                  <i class="fas fa-info-circle"></i> Ver Detalles
+                </button>
+                <button class="btn btn-secondary" onclick="getDirections('el-tunco')">
+                  <i class="fas fa-route"></i> Ruta
+                </button>
+                <button class="btn btn-outline" onclick="showHistory('el-tunco')">
+                  <i class="fas fa-history"></i> Historia
+                </button>
+              </div>
+            </div>
+          </div>
 
-## 🌐 Uso
+          <!-- El Boquerón -->
+          <div class="destination-card" data-destination="el-boqueron">
+            <div class="card-image">
+              <img src="ComalapaCaluco.png" alt="Parque Nacional El Boquerón">
+              <div class="card-overlay">
+                <div class="card-badge">Nuevo</div>
+                <button class="favorite-btn" onclick="toggleFavorite(this)">
+                  <i class="fas fa-heart"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Parque Nacional El Boquerón</h3>
+              <p>Miradores al cráter del volcán y clima fresco en San Salvador.</p>
+              <div class="features">
+                <span class="feature"><i class="fas fa-mountain"></i> Miradores</span>
+                <span class="feature"><i class="fas fa-hiking"></i> Senderos</span>
+                <span class="feature"><i class="fas fa-seedling"></i> Naturaleza</span>
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-primary" onclick="showDestinationDetails('el-boqueron')">
+                  <i class="fas fa-info-circle"></i> Ver Detalles
+                </button>
+                <button class="btn btn-secondary" onclick="getDirections('el-boqueron')">
+                  <i class="fas fa-route"></i> Ruta
+                </button>
+                <button class="btn btn-outline" onclick="showHistory('el-boqueron')">
+                  <i class="fas fa-history"></i> Historia
+                </button>
+              </div>
+            </div>
+          </div>
 
-1. Abre `index.html` en tu navegador
-2. Explora los destinos turísticos
-3. Haz clic en "Ver Detalles" para abrir modales con sonido
-4. Usa el botón de sonido para activar/desactivar audio ambiental
+          <!-- Lago de Coatepeque -->
+          <div class="destination-card" data-destination="coatepeque">
+            <div class="card-image">
+              <img src="https://tse4.mm.bing.net/th/id/OIP.pW2xkiHzMjDPDdmgop-jgwHaEc?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Lago de Coatepeque">
+              <div class="card-overlay">
+                <div class="card-badge">Tranquilo</div>
+                <button class="favorite-btn" onclick="toggleFavorite(this)">
+                  <i class="fas fa-heart"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Lago de Coatepeque</h3>
+              <p>Lago volcánico de aguas turquesa con miradores y restaurantes.</p>
+              <div class="features">
+                <span class="feature"><i class="fas fa-water"></i> Paseos</span>
+                <span class="feature"><i class="fas fa-utensils"></i> Gastronomía</span>
+                <span class="feature"><i class="fas fa-camera"></i> Vistas</span>
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-primary" onclick="showDestinationDetails('coatepeque')">
+                  <i class="fas fa-info-circle"></i> Ver Detalles
+                </button>
+                <button class="btn btn-secondary" onclick="getDirections('coatepeque')">
+                  <i class="fas fa-route"></i> Ruta
+                </button>
+                <button class="btn btn-outline" onclick="showHistory('coatepeque')">
+                  <i class="fas fa-history"></i> Historia
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
 
-## 🎵 Sonidos
 
-- **Clicks**: Sonidos sutiles en interacciones
-- **Notificaciones**: Audio para feedback
-- **Ambiental**: Sonido de fondo en modales
-- **Control**: Botón para activar/desactivar
 
-## 🗺️ Destinos
+      <!-- Actividades -->
+      <section id="activities" class="activities">
+        <div class="section-header">
+          <h2>Actividades Populares</h2>
+          <p>Disfruta de las mejores experiencias</p>
+        </div>
+        
+        <div class="activities-grid">
+          <div class="activity-card">
+            <div class="activity-icon">
+              <i class="fas fa-swimming-pool"></i>
+            </div>
+            <h3>Natación</h3>
+            <p>Disfruta de las piscinas cristalinas</p>
+          </div>
+          
+          <div class="activity-card">
+            <div class="activity-icon">
+              <i class="fas fa-hiking"></i>
+            </div>
+            <h3>Senderismo</h3>
+            <p>Explora senderos naturales</p>
+          </div>
+          
+          <div class="activity-card">
+            <div class="activity-icon">
+              <i class="fas fa-fish"></i>
+            </div>
+            <h3>Pesca</h3>
+            <p>Pesca deportiva en la laguna</p>
+      </div>
 
-1. **Playa El Tunco** - Surf y atardeceres en La Libertad
-2. **El Boquerón** - Volcán de San Salvador con miradores
-3. **Lago de Coatepeque** - Lago volcánico en Santa Ana
+          <div class="activity-card">
+            <div class="activity-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <h3>Fotografía</h3>
+            <p>Captura momentos únicos</p>
+          </div>
+        </div>
+      </section>
 
----
-*MVP desarrollado para explorar El Salvador de manera interactiva*
+      <!-- Mapa Interactivo -->
+      <section id="map" class="map-section">
+        <div class="section-header">
+          <h2>Ubicación</h2>
+          <p>Encuentra todos nuestros destinos</p>
+        </div>
+        <div class="map-controls">
+          <button class="btn btn-outline" onclick="getCurrentLocation()">
+            <i class="fas fa-location-arrow"></i> Mi Ubicación
+          </button>
+          <button class="btn btn-outline" onclick="showAllDestinations()">
+            <i class="fas fa-map-marker-alt"></i> Ver Todos
+          </button>
+        </div>
+        <div id="mapContainer" class="map-container"></div>
+        <div class="map-info">
+          <div class="map-legend">
+            <div class="legend-item">
+              <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
+              <span>Destinos Turísticos</span>
+            </div>
+            <div class="legend-item">
+              <i class="fas fa-location-arrow" style="color: #10b981;"></i>
+              <span>Tu Ubicación</span>
+            </div>
+          </div>
+      </div>
+    </section>
+  </main>
+
+    <!-- Navegación Inferior -->
+    <nav class="bottom-nav">
+      <a href="#hero" class="nav-item active" onclick="setActiveNav(this)">
+        <i class="fas fa-home"></i>
+        <span>Inicio</span>
+      </a>
+      <a href="#destinations" class="nav-item" onclick="setActiveNav(this)">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>Destinos</span>
+      </a>
+      <a href="#activities" class="nav-item" onclick="setActiveNav(this)">
+        <i class="fas fa-route"></i>
+        <span>Actividades</span>
+      </a>
+
+      <a href="#map" class="nav-item" onclick="setActiveNav(this)">
+        <i class="fas fa-map"></i>
+        <span>Mapa</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showProfile()">
+        <i class="fas fa-user"></i>
+        <span>Perfil</span>
+      </a>
+    </nav>
+  </div>
+
+
+
+  <!-- Modal de Detalles de Destino -->
+  <div id="detailsModal" class="details-modal modal hidden">
+    <div class="details-modal-content">
+      <div class="details-modal-header">
+        <div class="details-modal-image">
+          <img id="detailsImage" src="" alt="Destino">
+          <div class="details-modal-overlay">
+            <h2 id="detailsTitle">Destino</h2>
+            <p id="detailsSubtitle">Descripción breve</p>
+          </div>
+        </div>
+        <div class="modal-controls">
+          <button class="sound-toggle" onclick="toggleAmbientSound()" title="Sonido ambiental">
+            <i class="fas fa-volume-up"></i>
+          </button>
+          <button class="modal-close" onclick="closeDetailsModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="details-modal-body">
+        <div class="details-info">
+          <div class="info-section">
+            <h3><i class="fas fa-info-circle"></i> Información General</h3>
+            <p id="detailsDescription"></p>
+          </div>
+          
+          <div class="info-section">
+            <h3><i class="fas fa-clock"></i> Horarios</h3>
+            <p id="detailsHours"></p>
+          </div>
+          
+          <div class="info-section">
+            <h3><i class="fas fa-dollar-sign"></i> Precios</h3>
+            <p id="detailsPrice"></p>
+          </div>
+          
+          <div class="info-section">
+            <h3><i class="fas fa-star"></i> Características</h3>
+            <div id="detailsFeatures" class="features-grid"></div>
+          </div>
+          
+          <div class="info-section">
+            <h3><i class="fas fa-map-marker-alt"></i> Ubicación</h3>
+            <p id="detailsLocation"></p>
+            <button class="btn btn-primary" onclick="goToMapFromDetails()">
+              <i class="fas fa-map"></i> Ver en Mapa
+            </button>
+          </div>
+        </div>
+        
+        <div class="details-actions">
+          <button class="btn btn-secondary" onclick="getDirectionsFromDetails()">
+            <i class="fas fa-route"></i> Obtener Ruta
+          </button>
+          <button class="btn btn-outline" onclick="showHistoryFromDetails()">
+            <i class="fas fa-history"></i> Ver Historia
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="loading hidden">
+    <div class="loading-spinner"></div>
+    <p>Cargando...</p>
+  </div>
+
+  </div>
+
+  <!-- Modal de Historia -Shutecath -->
+  <div id="historyModal-shutecath" class="history-modal modal hidden">
+    <div class="history-modal-content">
+      <div class="history-modal-header">
+        <div class="history-modal-image">
+          <img src="https://everythingelsalvador.com/wp-content/uploads/2021/08/Playa-El-Tunco-El-Salvador-1800x1200.jpg" alt="Historia Shutecath">
+          <div class="history-modal-overlay">
+            <h2>Turicentro Shutecath</h2>
+            <p>Un legado de diversión familiar</p>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeHistoryModal('shutecath')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="history-modal-body">
+        <div class="history-timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">1985</div>
+            <div class="timeline-content">
+              <h4>Los Orígenes</h4>
+              <p>Shutecath comenzó como un pequeño estanque natural donde las familias locales se reunían para refrescarse en los calurosos días de verano. Era un lugar de encuentro comunitario donde se compartían historias y se creaban recuerdos inolvidables.</p>
+              <img src="https://via.placeholder.com/400x250/2563eb/ffffff?text=1985+-+Los+Orígenes" alt="Orígenes" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">1995</div>
+            <div class="timeline-content">
+              <h4>Primera Expansión</h4>
+              <p>Se construyó la primera piscina artificial y se agregaron áreas de picnic, marcando el inicio de su transformación en un centro turístico. Esta expansión trajo consigo nuevas oportunidades de empleo para la comunidad local.</p>
+              <img src="https://via.placeholder.com/400x250/059669/ffffff?text=1995+-+Primera+Expansión" alt="Expansión" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">2005</div>
+            <div class="timeline-content">
+              <h4>Era de los Toboganes</h4>
+              <p>Se instalaron los primeros toboganes acuáticos, convirtiendo Shutecath en el parque acuático más popular de la región. Esta innovación atrajo visitantes de todo el país y estableció el estándar para el entretenimiento familiar.</p>
+              <img src="https://via.placeholder.com/400x250/f59e0b/ffffff?text=2005+-+Era+de+los+Toboganes" alt="Toboganes" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">2020</div>
+            <div class="timeline-content">
+              <h4>Modernización Completa</h4>
+              <p>Una renovación completa trajo nuevas atracciones, restaurantes y áreas de entretenimiento, manteniendo su esencia familiar. Se implementaron tecnologías modernas y medidas de seguridad avanzadas.</p>
+              <img src="https://via.placeholder.com/400x250/dc2626/ffffff?text=2020+-+Modernización" alt="Modernización" class="timeline-image">
+            </div>
+          </div>
+        </div>
+        
+        <div class="history-gallery">
+          <h4>Galería Histórica</h4>
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/2563eb/ffffff?text=Familia+1990" alt="Foto histórica 1">
+              <p>Familia disfrutando en 1990</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/059669/ffffff?text=Primera+Piscina" alt="Foto histórica 2">
+              <p>Primera piscina construida</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/f59e0b/ffffff?text=Inauguración" alt="Foto histórica 3">
+              <p>Inauguración de toboganes</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/dc2626/ffffff?text=Vista+Aérea" alt="Foto histórica 4">
+              <p>Vista aérea actual</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Historia - La Cueva -->
+  <div id="historyModal-cueva" class="history-modal modal hidden">
+    <div class="history-modal-content">
+      <div class="history-modal-header">
+        <div class="history-modal-image">
+          <img src="https://via.placeholder.com/800x300/1e40af/ffffff?text=La+Cueva+-+Misterios+Ancestrales" alt="Historia La Cueva">
+          <div class="history-modal-overlay">
+            <h2>La Cueva</h2>
+            <p>Misterios ancestrales por descubrir</p>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeHistoryModal('cueva')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="history-modal-body">
+        <div class="history-timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">Pre-1500</div>
+            <div class="timeline-content">
+              <h4>Orígenes Prehispánicos</h4>
+              <p>Las cuevas fueron utilizadas por los pueblos indígenas como refugio y lugar de ceremonias espirituales. Se han encontrado vestigios arqueológicos que datan de más de 500 años, incluyendo herramientas y artefactos ceremoniales.</p>
+              <img src="https://via.placeholder.com/400x250/1e40af/ffffff?text=Pre-1500+-+Orígenes" alt="Prehispánico" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">1800</div>
+            <div class="timeline-content">
+              <h4>Descubrimiento Colonial</h4>
+              <p>Exploradores españoles documentaron las cuevas y sus formaciones geológicas únicas. Los registros de la época describen las impresionantes estalactitas y estalagmitas que adornan las cavernas.</p>
+              <img src="https://via.placeholder.com/400x250/059669/ffffff?text=1800+-+Colonial" alt="Colonial" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">1950</div>
+            <div class="timeline-content">
+              <h4>Primeras Expediciones</h4>
+              <p>Geólogos y espeleólogos comenzaron a mapear y estudiar las formaciones rocosas. Se descubrieron nuevas cámaras y se documentó la biodiversidad única que habita en las profundidades.</p>
+              <img src="https://via.placeholder.com/400x250/f59e0b/ffffff?text=1950+-+Expediciones" alt="Expediciones" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">2010</div>
+            <div class="timeline-content">
+              <h4>Turismo Sostenible</h4>
+              <p>Se estableció como destino turístico con guías especializados y medidas de conservación. Se implementaron rutas seguras y sistemas de iluminación que preservan el ambiente natural.</p>
+              <img src="https://via.placeholder.com/400x250/dc2626/ffffff?text=2010+-+Turismo" alt="Turismo" class="timeline-image">
+            </div>
+          </div>
+        </div>
+        
+        <div class="history-gallery">
+          <h4>Galería Histórica</h4>
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/1e40af/ffffff?text=Pinturas+Rupestres" alt="Foto histórica 1">
+              <p>Pinturas rupestres</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/059669/ffffff?text=Formaciones" alt="Foto histórica 2">
+              <p>Formaciones geológicas</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/f59e0b/ffffff?text=Expedición" alt="Foto histórica 3">
+              <p>Primera expedición</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/dc2626/ffffff?text=Vista+Actual" alt="Foto histórica 4">
+              <p>Vista actual</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Historia - La Laguna -->
+  <div id="historyModal-laguna" class="history-modal modal hidden">
+    <div class="history-modal-content">
+      <div class="history-modal-header">
+        <div class="history-modal-image">
+          <img src="https://via.placeholder.com/800x300/059669/ffffff?text=La+Laguna+-+Oasis+de+Paz" alt="Historia La Laguna">
+          <div class="history-modal-overlay">
+            <h2>La Laguna</h2>
+            <p>Un oasis de paz y tradición</p>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeHistoryModal('laguna')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="history-modal-body">
+        <div class="history-timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">1600</div>
+            <div class="timeline-content">
+              <h4>Formación Natural</h4>
+              <p>La laguna se formó naturalmente por la acumulación de agua de lluvia en una depresión geológica. Con el tiempo, se convirtió en un ecosistema rico que alberga diversas especies de peces y aves acuáticas.</p>
+              <img src="https://via.placeholder.com/400x250/059669/ffffff?text=1600+-+Formación" alt="Formación" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">1850</div>
+            <div class="timeline-content">
+              <h4>Asentamiento Agrícola</h4>
+              <p>Los primeros agricultores se establecieron alrededor de la laguna, utilizándola para riego y pesca. Se desarrollaron técnicas tradicionales de pesca que se han transmitido de generación en generación.</p>
+              <img src="https://via.placeholder.com/400x250/1e40af/ffffff?text=1850+-+Agrícola" alt="Agrícola" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">1950</div>
+            <div class="timeline-content">
+              <h4>Pesca Tradicional</h4>
+              <p>Se estableció como centro de pesca tradicional, pasando técnicas de generación en generación. Los pescadores locales desarrollaron un profundo respeto por el ecosistema y sus ciclos naturales.</p>
+              <img src="https://via.placeholder.com/400x250/f59e0b/ffffff?text=1950+-+Pesca" alt="Pesca" class="timeline-image">
+            </div>
+          </div>
+          
+          <div class="timeline-item">
+            <div class="timeline-marker">2000</div>
+            <div class="timeline-content">
+              <h4>Conservación y Turismo</h4>
+              <p>Se implementaron programas de conservación y se abrió al turismo sostenible. Se construyeron cabañas ecológicas y se establecieron senderos que permiten disfrutar de la belleza natural sin dañarla.</p>
+              <img src="https://via.placeholder.com/400x250/dc2626/ffffff?text=2000+-+Conservación" alt="Conservación" class="timeline-image">
+            </div>
+          </div>
+        </div>
+        
+        <div class="history-gallery">
+          <h4>Galería Histórica</h4>
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/059669/ffffff?text=Laguna+1900" alt="Foto histórica 1">
+              <p>Laguna en 1900</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/1e40af/ffffff?text=Pescadores" alt="Foto histórica 2">
+              <p>Pescadores tradicionales</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/f59e0b/ffffff?text=Primera+Cabaña" alt="Foto histórica 3">
+              <p>Primera cabaña</p>
+            </div>
+            <div class="gallery-item">
+              <img src="https://via.placeholder.com/250x180/dc2626/ffffff?text=Vista+Actual" alt="Foto histórica 4">
+              <p>Vista actual</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+
